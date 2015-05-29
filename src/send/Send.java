@@ -20,6 +20,7 @@ public class Send {
 	    connection = factory.newConnection();
 	    channel = connection.createChannel();
 	    channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+	    System.out.println(" [x] Send node set up on port " + connection.getPort());
 	}
 	
 	public void sendData(String data) throws java.io.IOException {
@@ -34,13 +35,13 @@ public class Send {
 	        connection.close();
 		}
 	}
-	/*
+
 	public static void main(String args[]) throws IOException{
 		Send send = new Send();
 		Scanner sc = new Scanner(System.in);
 		System.out.println(" [x] To end type end");
 		boolean flag = true;
-		while(flag){
+		while(flag) {
 			String message = sc.next();
 			if (message.equals("end")){
 				send.close();
@@ -49,6 +50,5 @@ public class Send {
 				send.sendData(message);
 			}
 		}
-	}*/
-	
+	}
 }

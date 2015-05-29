@@ -23,6 +23,9 @@ public class Receive {
 		connection = factory.newConnection();
 		channel = connection.createChannel();
 		channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+		consumer = new QueueingConsumer(channel);
+		channel.basicConsume(QUEUE_NAME, true, consumer);
+		System.out.println(" [x] Receive node set up on port " + connection.getPort());
 	}
 	
 	public void listen() throws java.io.IOException, ShutdownSignalException, InterruptedException {
@@ -34,13 +37,6 @@ public class Receive {
 	}
 	
 	public String receiveOnce() throws java.io.IOException, ShutdownSignalException, InterruptedException {
-		factory = new ConnectionFactory();
-		factory.setHost("localhost");
-		connection = factory.newConnection();
-		channel = connection.createChannel();
-		channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-		consumer = new QueueingConsumer(channel);
-		channel.basicConsume(QUEUE_NAME, true, consumer);
 		QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 		String message = new String(delivery.getBody());
 		System.out.println(" [x] Received Message: '" + message + "'");
@@ -53,11 +49,11 @@ public class Receive {
 	        connection.close();
 		}
 	}
-	
-	/*
+
+
 	public static void main(String args[]) throws IOException, ShutdownSignalException, InterruptedException{
 		Receive rec = new Receive();
 		System.out.println(" [x] To stop press CTRL+C");
 		rec.listen();
-	}*/
+	}
 }
