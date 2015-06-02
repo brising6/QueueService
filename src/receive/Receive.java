@@ -23,8 +23,10 @@ public class Receive {
 		connection = factory.newConnection();
 		channel = connection.createChannel();
 		channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+		channel.basicQos(1);
 		consumer = new QueueingConsumer(channel);
-		channel.basicConsume(QUEUE_NAME, true, consumer);
+	    channel.basicConsume(QUEUE_NAME, false, consumer);
+		
 		System.out.println(" [x] Receive node set up on port " + connection.getPort());
 	}
 	
@@ -32,14 +34,33 @@ public class Receive {
 		while (true) {
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			String message = new String(delivery.getBody());
-			System.out.println(" [x] Received Message: '" + message + "'");
+			channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+			System.out.println(" [x] Received '" + message + "'");  
+			if (message.equals("wait")){
+				System.out.println(" [x] waiting...");
+				Thread.sleep(12000);
+			}
 		}
 	}
 	
 	public String receiveOnce() throws java.io.IOException, ShutdownSignalException, InterruptedException {
 		QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 		String message = new String(delivery.getBody());
+		channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 		System.out.println(" [x] Received Message: '" + message + "'");
+		return message;
+	}
+	
+	public String retriveOnceTime() throws java.io.IOException, ShutdownSignalException, InterruptedException {
+		QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+		String message = new String(delivery.getBody());
+		channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+		System.out.println(" [x] Received '" + message + "'");  
+		if (message.split(" ")[0].equals("wait")){
+			System.out.println(" [x] Performing Job");
+			Thread.sleep(2000);
+			System.out.println(" [x] Job Complete");
+		}
 		return message;
 	}
 	
@@ -49,7 +70,6 @@ public class Receive {
 	        connection.close();
 		}
 	}
-
 
 	public static void main(String args[]) throws IOException, ShutdownSignalException, InterruptedException{
 		Receive rec = new Receive();

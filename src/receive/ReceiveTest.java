@@ -43,6 +43,7 @@ public class ReceiveTest extends TestCase {
 		super.setUp();
 		sender = new Send();
 		receiver = new Receive();
+		String clear;
 	}
 
 	/**
@@ -79,6 +80,17 @@ public class ReceiveTest extends TestCase {
 		String message = receiver.receiveOnce();
 		message = receiver.receiveOnce();
 		message = receiver.receiveOnce();
+		String otherString = receiver.receiveOnce();
 		assertEquals("test3", message);
+	}
+	
+	public void testWorkReceivers() throws ShutdownSignalException, IOException, InterruptedException {
+		sender.sendData("test1");
+		String message1 = receiver.receiveOnce();
+		sender.sendData("wait");
+		sender.sendData("test4");
+		String message2 = receiver.retriveOnceTime();
+		message2 = receiver.retriveOnceTime();
+		assertEquals("test4", message2);
 	}
 }

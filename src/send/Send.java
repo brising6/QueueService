@@ -6,6 +6,7 @@ import java.util.Scanner;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.MessageProperties;
 
 public class Send {
 	
@@ -25,7 +26,7 @@ public class Send {
 	
 	public void sendData(String data) throws java.io.IOException {
 	    String message = data;
-	    channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
+	    channel.basicPublish("", QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
 	    System.out.println(" [x] Sent '" + message + "'");
 	}
 	
